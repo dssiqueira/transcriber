@@ -9,11 +9,12 @@ from pathlib import Path
 import qtawesome as qta
 from PySide6.QtCore import Qt, Slot, QTimer, QSize
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QApplication, QMainWindow, QWidget,
+    QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QComboBox, QTabWidget,
     QProgressBar, QFileDialog, QMessageBox,
-    QRadioButton, QButtonGroup, QListWidget, QTextEdit,
-    QFrame
+    QRadioButton, QButtonGroup, QTableWidget, QTextEdit,
+    QFrame, QTableWidgetItem, QHeaderView
 )
 from PySide6.QtGui import QPainter, QColor, QPen
 
@@ -300,23 +301,33 @@ class AudioTranscriber(QMainWindow):
                 border-top: 5px solid #B3B3B3;  /* Secondary text */
                 margin-right: 8px;
             }
-            QListWidget {
-                background-color: #181818;  /* Menu bar */
-                border: 1px solid #404040;  /* Top gradient */
+            QTableWidget {
+                background-color: #181818;
+                border: 1px solid #404040;
                 border-radius: 4px;
-                color: #FFFFFF;  /* Primary text */
-                padding: 5px;
+                color: #FFFFFF;
+                gridline-color: #404040;
             }
-            QListWidget::item {
+            QTableWidget::item {
                 padding: 8px;
-                border-bottom: 1px solid #404040;  /* Top gradient */
+                border: none;
             }
-            QListWidget::item:selected {
-                background-color: #282828;  /* Bottom gradient */
-                color: #FFFFFF;  /* Primary text */
+            QTableWidget::item:selected {
+                background-color: #282828;
+                color: #FFFFFF;
             }
-            QListWidget::item:hover {
-                background-color: #404040;  /* Top gradient */
+            QTableWidget::item:hover {
+                background-color: #404040;
+            }
+            QHeaderView::section {
+                background-color: #282828;
+                color: #FFFFFF;
+                padding: 8px;
+                border: none;
+                border-bottom: 1px solid #404040;
+            }
+            QHeaderView::section:hover {
+                background-color: #404040;
             }
             QLineEdit, QTextEdit {
                 background-color: #181818;  /* Menu bar */
@@ -575,7 +586,6 @@ class AudioTranscriber(QMainWindow):
             }
             QComboBox::drop-down {
                 border: none;
-                padding-right: 10px;
             }
             QComboBox::down-arrow {
                 image: none;
@@ -659,29 +669,61 @@ class AudioTranscriber(QMainWindow):
         """)
         recording_layout.addWidget(self.vu_meter)
         
-        # Lista de arquivos - Bulma panel
-        recording_layout.addWidget(QLabel("Arquivos de Áudio:"))
-        self.audio_list = QListWidget()
-        self.audio_list.setStyleSheet("""
-            QListWidget {
-                background-color: #FFFFFF;
+        # Lista de arquivos de áudio
+        self.audio_list = QTableWidget()
+        self.audio_list.setColumnCount(4)
+        
+        # Cria os cabeçalhos com ícones
+        file_header = QTableWidgetItem(qta.icon('fa5s.file-audio'), " Nome do Arquivo")
+        date_header = QTableWidgetItem(qta.icon('fa5s.calendar'), " Data de Criação")
+        duration_header = QTableWidgetItem(qta.icon('fa5s.clock'), " Duração")
+        delete_header = QTableWidgetItem(qta.icon('fa5s.trash-alt'), " Excluir")
+        
+        # Define os cabeçalhos
+        self.audio_list.setHorizontalHeaderItem(0, file_header)
+        self.audio_list.setHorizontalHeaderItem(1, date_header)
+        self.audio_list.setHorizontalHeaderItem(2, duration_header)
+        self.audio_list.setHorizontalHeaderItem(3, delete_header)
+        
+        # Configura o redimensionamento das colunas
+        self.audio_list.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.audio_list.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        self.audio_list.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        self.audio_list.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        
+        self.audio_list.horizontalHeader().setStyleSheet("""
+            QTableWidget {
+                background-color: #181818;
                 border: 1px solid #404040;
                 border-radius: 4px;
-                padding: 5px;
+                color: #FFFFFF;
+                gridline-color: #404040;
             }
-            QListWidget::item {
-                color: #000000;
-                padding: 5px;
-                border-radius: 3px;
+            QTableWidget::item {
+                padding: 8px;
+                border: none;
             }
-            QListWidget::item:hover {
-                background-color: #E8E8E8;
-            }
-            QListWidget::item:selected {
-                background-color: #404040;
+            QTableWidget::item:selected {
+                background-color: #282828;
                 color: #FFFFFF;
             }
+            QTableWidget::item:hover {
+                background-color: #404040;
+            }
+            QHeaderView::section {
+                background-color: #282828;
+                color: #FFFFFF;
+                padding: 8px;
+                border: none;
+                border-bottom: 1px solid #404040;
+            }
+            QHeaderView::section:hover {
+                background-color: #404040;
+            }
         """)
+        self.audio_list.verticalHeader().hide()
+        self.audio_list.setSelectionBehavior(QTableWidget.SelectRows)
+        self.audio_list.setSelectionMode(QTableWidget.SingleSelection)
         self.audio_list.itemClicked.connect(self.select_audio_file)
         recording_layout.addWidget(self.audio_list)
         
@@ -816,15 +858,59 @@ class AudioTranscriber(QMainWindow):
 
     def update_audio_list(self):
         """Atualiza a lista de arquivos de áudio disponíveis"""
-        self.audio_list.clear()
+        self.audio_list.setRowCount(0)
         for file in os.listdir(self.audio_dir):
-            if file.endswith(".wav") or file.endswith(".mp3") or file.endswith(".m4a"):
-                self.audio_list.addItem(file)
+            if file.endswith((".wav", ".mp3", ".m4a")):
+                file_path = os.path.join(self.audio_dir, file)
+                # Obtém a data de criação
+                creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
+                creation_str = creation_time.strftime("%d/%m/%Y %H:%M")
+                
+                # Obtém a duração do áudio
+                try:
+                    audio_info = sf.info(file_path)
+                    duration = audio_info.duration
+                    duration_str = f"{int(duration // 60)}:{int(duration % 60):02d}"
+                except Exception as e:
+                    print(f"Erro ao ler duração do arquivo {file}: {e}")
+                    duration_str = "??:??"
+                
+                # Adiciona uma nova linha
+                row = self.audio_list.rowCount()
+                self.audio_list.insertRow(row)
+                
+                # Adiciona os itens
+                self.audio_list.setItem(row, 0, QTableWidgetItem(file))
+                self.audio_list.setItem(row, 1, QTableWidgetItem(creation_str))
+                
+                # Adiciona a duração centralizada
+                duration_item = QTableWidgetItem(duration_str)
+                duration_item.setTextAlignment(Qt.AlignCenter)
+                self.audio_list.setItem(row, 2, duration_item)
+                
+                # Adiciona o botão de exclusão
+                delete_button = QPushButton()
+                delete_button.setIcon(qta.icon('fa5s.trash-alt'))
+                delete_button.setStyleSheet("""
+                    QPushButton {
+                        background-color: transparent;
+                        border: none;
+                        padding: 5px;
+                    }
+                    QPushButton:hover {
+                        background-color: #404040;
+                        border-radius: 3px;
+                    }
+                """)
+                delete_button.clicked.connect(lambda checked, f=file: self.confirm_delete_audio(f))
+                self.audio_list.setCellWidget(row, 3, delete_button)
 
     @Slot()
     def select_audio_file(self, item):
         """Seleciona um arquivo de áudio para transcrição"""
-        self.current_audio_file = f"{self.audio_dir}/{item.text()}"
+        row = item.row()
+        filename = self.audio_list.item(row, 0).text()
+        self.current_audio_file = f"{self.audio_dir}/{filename}"
         self.update_selected_file_label(self.current_audio_file)
         self.transcribe_button.setEnabled(True)
 
@@ -1225,6 +1311,68 @@ Preço estimado da transcrição: ${estimated_cost:.3f}"""
             self.filename_label.setText(os.path.basename(filename))
         else:
             self.filename_label.setText("")
+
+    def confirm_delete_audio(self, filename):
+        """Mostra um diálogo de confirmação antes de excluir o arquivo"""
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setWindowTitle("Confirmar Exclusão")
+        msg.setText(f"Tem certeza que deseja excluir o arquivo '{filename}'?")
+        msg.setInformativeText("Esta ação não pode ser desfeita.")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg.setDefaultButton(QMessageBox.No)
+        
+        # Traduz os botões
+        msg.button(QMessageBox.Yes).setText("Sim")
+        msg.button(QMessageBox.No).setText("Não")
+        
+        msg.setStyleSheet("""
+            QMessageBox {
+                background-color: #282828;
+            }
+            QMessageBox QLabel {
+                color: #FFFFFF;
+            }
+            QPushButton {
+                background-color: #404040;
+                color: #FFFFFF;
+                border: none;
+                padding: 5px 15px;
+                border-radius: 3px;
+            }
+            QPushButton:hover {
+                background-color: #505050;
+            }
+        """)
+        
+        if msg.exec_() == QMessageBox.Yes:
+            try:
+                os.remove(os.path.join(self.audio_dir, filename))
+                self.update_audio_list()
+            except Exception as e:
+                error_msg = QMessageBox()
+                error_msg.setIcon(QMessageBox.Critical)
+                error_msg.setWindowTitle("Erro")
+                error_msg.setText(f"Erro ao excluir o arquivo: {str(e)}")
+                error_msg.setStyleSheet("""
+                    QMessageBox {
+                        background-color: #282828;
+                    }
+                    QMessageBox QLabel {
+                        color: #FFFFFF;
+                    }
+                    QPushButton {
+                        background-color: #404040;
+                        color: #FFFFFF;
+                        border: none;
+                        padding: 5px 15px;
+                        border-radius: 3px;
+                    }
+                    QPushButton:hover {
+                        background-color: #505050;
+                    }
+                """)
+                error_msg.exec_()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
