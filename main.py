@@ -91,7 +91,7 @@ class AudioTranscriber(QMainWindow):
         self.setMinimumSize(800, 600)
         
         # Configuração dos diretórios
-        self.audio_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "audios")
+        self.audio_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "audio")
         self.transcription_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "transcricoes")
         self.config_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
         
@@ -702,26 +702,33 @@ class AudioTranscriber(QMainWindow):
                 
             device = self.input_devices[device_index]
             
-            # Configura o stream de áudio
+            # Configurações otimizadas
+            SAMPLE_RATE = 44100
+            CHANNELS = 1
+            DTYPE = 'float32'
+            
+            # Verifica se o dispositivo suporta a taxa de amostragem
+            device_info = sd.query_devices(device['index'])
+            if device_info['max_input_channels'] < CHANNELS:
+                raise Exception(f"Dispositivo não suporta {CHANNELS} canais")
+                
+            # Usa a taxa de amostragem nativa do dispositivo se disponível
+            if 'default_samplerate' in device_info:
+                SAMPLE_RATE = int(device_info['default_samplerate'])
+            
             self.audio_data = []
             self.stream = sd.InputStream(
                 device=device['index'],
-                channels=1,  # Força mono para simplicidade
-                samplerate=int(device['samplerate']),
-                callback=self.audio_callback
+                channels=CHANNELS,
+                samplerate=SAMPLE_RATE,
+                dtype=DTYPE,
+                callback=self.audio_callback,
+                blocksize=1024,  # Tamanho do buffer menor para menor latência
+                latency='low'    # Baixa latência
             )
             
-            # Testa o stream antes de iniciar
-            test_data = sd.rec(
-                frames=int(device['samplerate'] * 0.1),  # 100ms de teste
-                samplerate=int(device['samplerate']),
-                channels=1,
-                device=device['index']
-            )
-            sd.wait()
-            
-            if test_data is None:
-                raise Exception("Falha no teste do dispositivo de áudio")
+            # Armazena as configurações para uso posterior
+            self.current_sample_rate = SAMPLE_RATE
             
             self.stream.start()
             self.recording = True
@@ -735,37 +742,48 @@ class AudioTranscriber(QMainWindow):
                 error_msg = "Erro de buffer do microfone. Tente diminuir a taxa de amostragem."
             
             print(f"Erro detalhado: {e}")  # Debug
-            QMessageBox.critical(self, "Erro", f"Erro ao iniciar gravação: {error_msg}")
+            QMessageBox.warning(self, "Erro", f"Erro ao iniciar gravação: {error_msg}")
             self.recording = False
             self.record_button.setText(" Gravar")
 
     def stop_recording(self):
         """Para a gravação de áudio"""
         if self.stream:
-            self.stream.stop()
-            self.stream.close()
-            self.stream = None
+            try:
+                self.stream.stop()
+                self.stream.close()
+                self.stream = None
+                
+                if self.audio_data:
+                    # Concatena os dados do áudio
+                    audio_data = np.concatenate(self.audio_data, axis=0)
+                    
+                    # Normaliza o volume se necessário
+                    max_val = np.max(np.abs(audio_data))
+                    if max_val > 0:
+                        audio_data = audio_data / max_val
+                    
+                    # Salva o arquivo
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    filename = f"{self.audio_dir}/gravacao_{timestamp}.wav"
+                    
+                    # Garante que o diretório existe
+                    os.makedirs(self.audio_dir, exist_ok=True)
+                    
+                    # Salva com a taxa de amostragem correta
+                    sf.write(filename, audio_data, self.current_sample_rate, 'PCM_16')
+                    
+                    # Atualiza a interface
+                    self.current_audio_file = filename
+                    self.update_selected_file_label(filename)
+                    self.transcribe_button.setEnabled(True)
+                    self.update_audio_list()
+                    
+                    QMessageBox.information(self, "Sucesso", f"Áudio salvo como {os.path.basename(filename)}")
             
-            # Salva o áudio gravado
-            if self.audio_data:
-                audio_data = np.concatenate(self.audio_data, axis=0)
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                
-                # Garante que o diretório existe
-                os.makedirs(self.audio_dir, exist_ok=True)
-                
-                filename = f"{self.audio_dir}/gravacao_{timestamp}.wav"
-                sf.write(filename, audio_data, 16000)  # Usa a mesma taxa de amostragem da gravação
-                
-                # Atualiza a interface
-                self.current_audio_file = filename
-                self.update_selected_file_label(filename)
-                self.transcribe_button.setEnabled(True)
-                
-                # Atualiza a lista de arquivos
-                self.update_audio_list()
-                
-                QMessageBox.information(self, "Sucesso", f"Áudio salvo como {os.path.basename(filename)}")
+            except Exception as e:
+                print(f"Erro ao salvar áudio: {e}")
+                QMessageBox.critical(self, "Erro", f"Erro ao salvar a gravação: {str(e)}")
         
         self.recording = False
         self.record_button.setText(" Gravar")
