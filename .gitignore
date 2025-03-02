@@ -1,3 +1,8 @@
 # Ignore audio files in audio directory
 audio/*
 !audio/.gitkeep
+
+# Ignore config files
+config/*
+!config/.gitkeep
+!config/whisper_settings.json
