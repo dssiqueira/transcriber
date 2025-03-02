@@ -1,0 +1,3 @@
+# Ignore audio files in audio directory
+audio/*
+!audio/.gitkeep
