@@ -6,3 +6,35 @@ audio/*
 config/*
 !config/.gitkeep
 !config/whisper_settings.json
+
+# Python virtual environments
+venv/
+venv_new/
+.env/
+.venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
