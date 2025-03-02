@@ -6,6 +6,8 @@ audio/*
 config/*
 !config/.gitkeep
 !config/whisper_settings.json
+!config/settings.json
+!config/savings.json
 
 # Python virtual environments
 venv/
