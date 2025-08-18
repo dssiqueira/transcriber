@@ -9,6 +9,10 @@ config/*
 !config/settings.json
 !config/savings.json
 
+# Ignore transcription files (keep folder structure)
+transcriptions/*
+!transcriptions/.gitkeep
+
 # Python virtual environments
 venv/
 venv_new/

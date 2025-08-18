@@ -1,154 +1,223 @@
-# 🎙️ Transcritor de Áudio
+# 🎙️ Audio Transcriber
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PySide6](https://img.shields.io/badge/PySide6-6.4.0+-green.svg)](https://wiki.qt.io/Qt_for_Python)
+[![Whisper](https://img.shields.io/badge/OpenAI-Whisper-orange.svg)](https://github.com/openai/whisper)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/yourusername/transcriber/graphs/commit-activity)
 
 <div align="center">
 
-Uma aplicação desktop moderna e eficiente para gravação e transcrição de áudio, com suporte a múltiplos serviços de transcrição e uma interface intuitiva.
+**Uma aplicação desktop moderna e elegante para gravação e transcrição de áudio com IA**
 
-[Funcionalidades](#funcionalidades) •
-[Requisitos](#requisitos) •
-[Instalação](#instalação) •
-[Uso](#uso) •
-[Configuração](#configuração)
+✨ Waveform neon em tempo real • 🚀 Transcrição ultra-precisa • 🎨 Interface moderna • 🎯 Otimizado para português brasileiro
+
+[🚀 Instalação Rápida](#-instalação-rápida) •
+[✨ Funcionalidades](#-funcionalidades) •
+[📖 Como Usar](#-como-usar) •
+[⚙️ Configuração](#️-configuração)
+
+![Screenshot](https://via.placeholder.com/800x500/1a1a1a/4a9eff?text=Audio+Transcriber+Interface)
 
 </div>
 
 ## ✨ Funcionalidades
 
-🎤 **Gravação Avançada**
-- Gravação de áudio em alta qualidade via microfone
-- Medidor VU em tempo real para monitoramento de níveis
-- Suporte a múltiplos dispositivos de entrada
-- Upload de arquivos de áudio existentes
+### 🎨 **Interface Moderna**
+- **Tema escuro elegante** com design minimalista
+- **Waveform neon dinâmica** com gradiente de cores em tempo real
+- **Layout responsivo** com navegação por abas intuitiva
+- **Toast notifications** para feedback visual imediato
+- **Animações suaves** e transições modernas
 
-🤖 **Múltiplos Serviços de Transcrição**
-- [Whisper Local](https://github.com/openai/whisper) - Transcrição offline
-- [Google Speech-to-Text](https://cloud.google.com/speech-to-text) - Alta precisão online
-- [OpenAI Whisper API](https://platform.openai.com/docs/guides/speech-to-text) - Modelo state-of-the-art
+### 🎤 **Gravação Profissional**
+- **Gravação em alta qualidade** (16kHz, mono otimizado)
+- **Waveform reativa** com 5 níveis de cores neon dinâmicas
+- **Seleção de microfone** com detecção automática de dispositivos
+- **Timer de gravação** com controle preciso de tempo
+- **Feedback visual** de sucesso com toast notifications
 
-💻 **Interface Moderna**
-- Design responsivo e intuitivo
-- Tema escuro moderno
-- Ícones bonitos e intuitivos
-- Visualização da transcrição em tempo real
+### 🚀 **Transcrição Otimizada**
+- **Whisper AI local** - 100% offline e privado
+- **Processamento direto de áudio** sem arquivos temporários
+- **Normalização automática** e reamostragem para 16kHz
+- **Idioma português forçado** para máxima precisão
+- **Configurações otimizadas** (beam_size=5, best_of=5)
 
-📄 **Exportação Flexível**
-- Exportação para TXT
-- Exportação para DOCX com formatação
-- Histórico de transcrições
+### 💰 **Controle de Economia**
+- **Cálculo automático** de economia vs serviços pagos
+- **Histórico detalhado** de transcrições
+- **Estatísticas em tempo real** de uso e economia
+- **Comparação de custos** com OpenAI Whisper API
 
-💰 **Controle de Custos**
-- Acompanhamento de gastos com APIs
-- Estimativas de custo antes da transcrição
-- Histórico de economia
+### 📁 **Gerenciamento Inteligente**
+- **Histórico completo** de transcrições salvas
+- **Busca e organização** de arquivos
+- **Exportação de texto** com um clique
+- **Backup automático** de dados
 
-## 🚀 Requisitos
+## 🚀 Instalação Rápida
 
-- Python 3.8 ou superior
-- Sistema operacional: Windows, macOS ou Linux
-- Microfone (para gravação)
-- Dependências Python listadas em `requirements.txt`
+### Pré-requisitos
+- **Python 3.8+** instalado
+- **Microfone** conectado (para gravação)
+- **4GB RAM** mínimo recomendado
 
-## 📦 Instalação
+### Instalação em 3 passos
 
-1. **Clone o repositório**
 ```bash
-git clone https://github.com/yourusername/transcriber.git
-cd transcriber
+# 1. Clone o repositório
+git clone https://github.com/yourusername/audio-transcriber.git
+cd audio-transcriber
+
+# 2. Instale as dependências
+pip install -r requirements.txt
+
+# 3. Execute a aplicação
+python main.py
 ```
 
-2. **Configure o ambiente virtual (recomendado)**
+### 🐍 Ambiente Virtual (Recomendado)
 ```bash
+# Crie o ambiente virtual
 python -m venv venv
-# Windows
-venv\Scripts\activate
-# Linux/macOS
-source venv/bin/activate
-```
 
-3. **Instale as dependências**
-```bash
+# Ative o ambiente
+# Windows:
+venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
+
+# Instale as dependências
 pip install -r requirements.txt
 ```
 
-## 🎯 Uso
+## 📖 Como Usar
 
-### Gravação de Áudio
+### 🎤 **Gravação Simples**
+1. **Selecione seu microfone** no dropdown da interface
+2. **Clique no botão de gravação** (ícone de microfone)
+3. **Observe a waveform neon** reagindo ao seu áudio em tempo real
+4. **Clique no botão stop** para finalizar
+5. **Receba confirmação visual** com toast notification de sucesso
 
-1. Selecione o dispositivo de entrada desejado
-2. Ajuste o nível de entrada usando o medidor VU
-3. Clique em "Iniciar Gravação" para começar
-4. Monitore os níveis de áudio em tempo real
-5. Clique em "Parar" quando terminar
+### 📁 **Gerenciar Arquivos**
+1. **Clique em "My Files"** na barra superior
+2. **Selecione qualquer arquivo** da lista
+3. **Clique "Transcribe"** para processar
+4. **Aguarde o progresso** na barra de carregamento
 
-### Transcrição
+### ⚙️ **Configurações Avançadas**
+1. **Acesse "Settings"** no menu superior
+2. **Escolha o modelo Whisper** (Tiny para velocidade)
+3. **Visualize suas economias** acumuladas
+4. **Ajuste preferências** conforme necessário
 
-1. Escolha o serviço de transcrição:
-   - **Whisper Local**: Processamento offline, gratuito
-   - **Google Speech**: Melhor para áudio limpo
-   - **OpenAI Whisper**: Melhor para casos complexos
-
-2. Configure as opções de transcrição:
-   - Idioma (automático ou específico)
-   - Qualidade (velocidade vs precisão)
-   - Formato de saída
-
-3. Inicie a transcrição e acompanhe o progresso
-
-### Exportação
-
-- Use o botão "Exportar" para salvar em TXT ou DOCX
-- Escolha o local e formato desejados
-- Adicione metadados opcionais
+### 💡 **Dicas de Uso**
+- **Ambiente silencioso** = melhor qualidade de transcrição
+- **Fale claramente** e em ritmo normal para máxima precisão
+- **Observe a waveform** - cores mais vibrantes indicam melhor captação
+- **Toast verde** confirma que a gravação foi salva com sucesso
+- **Timer automático** mostra duração da gravação em tempo real
 
 ## ⚙️ Configuração
 
-### Configuração de APIs
+### 🔧 **Configurações do Sistema**
+A aplicação funciona **100% offline** por padrão, sem necessidade de APIs externas:
 
-1. Acesse a aba "Configurações"
-2. Insira suas chaves de API:
-   - Google Cloud (opcional)
-   - OpenAI API (opcional)
-3. Configure as preferências:
-   - Idioma padrão
-   - Formato de exportação
-   - Tema da interface
+- **Modelo Whisper**: Tiny (rápido) ou Small (preciso)
+- **Idioma**: Português brasileiro otimizado
+- **Qualidade de áudio**: 16kHz, mono (otimizado)
+- **Formato de saída**: JSON com metadados completos
 
-### Configurações de Áudio
+### 📊 **Estrutura de Arquivos**
+```
+transcriber/
+├── audio/           # Gravações temporárias
+├── transcriptions/  # Histórico de transcrições
+├── config/          # Configurações e economia
+├── src/            # Código fonte
+└── main.py         # Executável principal
+```
 
-- Taxa de amostragem
-- Canais (mono/estéreo)
-- Formato de gravação
-- Qualidade de compressão
+### 🎛️ **Configurações Avançadas**
+- **GPU**: Detecção automática para aceleração
+- **Memória**: Otimizado para sistemas com 4GB+
+- **Threads**: Processamento paralelo inteligente
+- **Cache**: Modelos baixados automaticamente
 
-## 📊 Monitoramento de Custos
+## 📊 Sistema de Economia
 
-- Acompanhe o uso de APIs
-- Visualize economia por serviço
-- Defina limites de gastos
-- Receba alertas de uso
+### 💰 **Cálculo Automático**
+- **OpenAI Whisper API**: $0.006/minuto
+- **Whisper Local**: $0.00/minuto
+- **Economia total**: Calculada em tempo real
+
+### 📈 **Estatísticas Detalhadas**
+- Tempo total transcrito
+- Valor economizado acumulado
+- Histórico de uso por arquivo
+- Comparativo de custos
+
+## 🚀 Performance
+
+### ⚡ **Otimizações Implementadas**
+- **Processamento direto**: Áudio passado diretamente ao Whisper (sem I/O de arquivos)
+- **Normalização automática**: Previne clipping e melhora qualidade
+- **Reamostragem inteligente**: Converte automaticamente para 16kHz
+- **Configuração otimizada**: beam_size=5, best_of=5, temperature=0.0
+- **Idioma forçado**: Português brasileiro para evitar detecção incorreta
+
+### 📱 **Requisitos Mínimos**
+- **RAM**: 4GB (8GB recomendado)
+- **CPU**: Dual-core 2GHz+
+- **GPU**: Opcional (CUDA/OpenCL)
+- **Espaço**: 2GB para modelos
 
 ## 🤝 Contribuindo
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
+Quer melhorar o Audio Transcriber? 
 
-- Reportar bugs
-- Sugerir novas funcionalidades
-- Enviar pull requests
-- Melhorar a documentação
+### 🐛 **Reportar Bugs**
+- Abra uma [issue](https://github.com/yourusername/audio-transcriber/issues)
+- Descreva o problema detalhadamente
+- Inclua logs e screenshots
+
+### ✨ **Sugerir Funcionalidades**
+- Compartilhe suas ideias
+- Vote em funcionalidades existentes
+- Participe das discussões
+
+### 🔧 **Desenvolver**
+```bash
+# Fork o projeto
+git fork https://github.com/yourusername/audio-transcriber
+
+# Crie uma branch
+git checkout -b minha-funcionalidade
+
+# Faça suas alterações
+git commit -m "Adiciona nova funcionalidade"
+
+# Envie um PR
+git push origin minha-funcionalidade
+```
 
 ## 📝 Licença
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+**MIT License** - Use, modifique e distribua livremente!
 
 ---
 
 <div align="center">
-Desenvolvido com ❤️ usando Python e Qt
 
-[⬆ Voltar ao topo](#-transcritor-de-áudio)
+**🎙️ Desenvolvido com ❤️ usando Python, PySide6 e OpenAI Whisper**
+
+*Transformando áudio em texto com elegância e velocidade*
+
+[![⭐ Star no GitHub](https://img.shields.io/badge/⭐-Star%20no%20GitHub-yellow.svg)](https://github.com/yourusername/audio-transcriber)
+[![🐛 Reportar Bug](https://img.shields.io/badge/🐛-Reportar%20Bug-red.svg)](https://github.com/yourusername/audio-transcriber/issues)
+[![💡 Sugerir Funcionalidade](https://img.shields.io/badge/💡-Sugerir%20Funcionalidade-blue.svg)](https://github.com/yourusername/audio-transcriber/issues)
+
+[⬆ Voltar ao topo](#-audio-transcriber)
+
 </div>
