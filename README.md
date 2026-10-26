@@ -221,3 +221,5 @@ git push origin minha-funcionalidade
 [⬆ Voltar ao topo](#-audio-transcriber)
 
 </div>
+
+Feito por [Douglas Siqueira](https://dsiqueira.com/sobre) · [dsiqueira.com](https://dsiqueira.com)
